@@ -1,9 +1,9 @@
+private/
+revision/
 results
-*.pt
 plots
 Anchor
 .idea
-*.pickle
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -19,13 +19,17 @@ import os
 import time
 import nibabel as nib
 import numpy as np
-import IVIMNET.deep as deep
 import torch
-from IVIMNET.fitting_algorithms import fit_dats
-from hyperparams import hyperparams as hp
 
-arg = hp()
-arg = deep.checkarg(arg)
+from IVIMNET.utils.hyperparams import hyperparams
+from IVIMNET.utils.checkarg import checkarg
+from IVIMNET.fitting_algorithms import fit_dats
+from IVIMNET.deep.predict import predict_IVIM
+from IVIMNET.deep.learn import learn_IVIM
+
+
+arg = hyperparams()
+arg = checkarg(arg)
 
 testdata = False
 
@@ -83,12 +87,12 @@ if not arg.train_pars.skip_net:
     res = [i for i, val in enumerate(datatot != datatot) if not val.any()] # Remove NaN data
     start_time = time.time()
     # train network
-    net = deep.learn_IVIM(datatot[res], bvalues, arg)
+    net = learn_IVIM(datatot[res], bvalues, arg)
     elapsed_time1net = time.time() - start_time
     print('\ntime elapsed for Net: {}\n'.format(elapsed_time1net))
     start_time = time.time()
     # predict parameters
-    paramsNN = deep.predict_IVIM(datatot, bvalues, net, arg)
+    paramsNN = predict_IVIM(datatot, bvalues, net, arg)
     elapsed_time1netinf = time.time() - start_time
     print('\ntime elapsed for Net inf: {}\n'.format(elapsed_time1netinf))
     print('\ndata length: {}\n'.format(len(datatot)))

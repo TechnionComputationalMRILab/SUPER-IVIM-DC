@@ -14,15 +14,28 @@ scipy
 joblib
 """
 
-# import
 import numpy as np
-import IVIMNET.simulations as sim
-import IVIMNET.deep as deep
-from hyperparams import hyperparams as hp_example
+import sys
 
-# load hyperparameter
-arg = hp_example()
-arg = deep.checkarg(arg)
+from IVIMNET.utils.hyperparams import hyperparams
+from IVIMNET.utils.checkarg import checkarg
+from IVIMNET.simulations import sim
+
+
+key = 'phantom'
+if key == 'clinic':
+    arg = hyperparams(key='clinic')
+    arg = checkarg(arg)
+elif key == 'sim':
+    arg = hyperparams(key='sim')
+    arg = checkarg(arg)
+elif key == 'phantom':
+    print('phantom training')
+    arg = hyperparams(key='phantom')
+    arg = checkarg(arg)
+else:
+    print('define key')
+    sys.exit(-1)
 
 matlsq = np.zeros([len(arg.sim.SNR), 3, 3])
 matNN = np.zeros([len(arg.sim.SNR), 3, 3])
@@ -32,15 +45,15 @@ a = 0
 for SNR in arg.sim.SNR:
     print('\n simulation at SNR of {snr}\n'.format(snr=SNR))
     if arg.fit.do_fit:
-        matlsq[a, :, :], matNN[a, :, :], stability[a, :] = sim.sim(SNR, arg)
+        matlsq[a, :, :], matNN[a, :, :], stability[a, :] = sim(SNR, arg, supervised=True)
         print('\nresults from lsq:')
         print(matlsq)
     else:
-        matNN[a, :, :], stability[a, :] = sim.sim(SNR, arg)
+        matNN[a, :, :], stability[a, :] = sim(SNR, arg)
     a = a + 1
-    print('\nresults from NN: columns show themean, the RMSE/mean and the Spearman coef [DvDp,Dvf,fvDp] \n'
+    print('\nresults from NN: columns show the mean, the RMSE/mean and the Spearman coef [DvDp,Dvf,fvDp] \n'
           'the rows show D, f and D*\n'
-          'and the different matixes repressent the different SNR levels {}:'.format(arg.sim.SNR))
+          'and the different matixes represent the different SNR levels {}:'.format(arg.sim.SNR))
     print(matNN)
     # if repeat is higher than 1, then print stability (CVNET)
     if arg.sim.repeats > 1:

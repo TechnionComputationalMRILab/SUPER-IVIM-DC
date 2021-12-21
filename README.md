@@ -1,4 +1,4 @@
-# IVIMNET
+# SUPER-IVIM-DC
 
 By Elad Rotman, under the supervision of Dr. Moti Freiman
 

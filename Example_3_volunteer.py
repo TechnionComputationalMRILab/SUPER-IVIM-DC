@@ -21,11 +21,11 @@ import nibabel as nib
 import numpy as np
 import torch
 
-from IVIMNET.utils.hyperparams import hyperparams
-from IVIMNET.utils.checkarg import checkarg
-from IVIMNET.fitting_algorithms import fit_dats
-from IVIMNET.deep.predict import predict_IVIM
-from IVIMNET.deep.learn import learn_IVIM
+from SUPER_IVIM_DC.utils.hyperparams import hyperparams
+from SUPER_IVIM_DC.utils.checkarg import checkarg
+from SUPER_IVIM_DC.fitting_algorithms import fit_dats
+from SUPER_IVIM_DC.deep.predict import predict_IVIM
+from SUPER_IVIM_DC.deep.learn import learn_IVIM
 
 
 arg = hyperparams()

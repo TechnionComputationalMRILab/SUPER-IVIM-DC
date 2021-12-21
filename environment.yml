@@ -1,4 +1,4 @@
-name: IVIMNET
+name: SUPER_IVIM_DC
 channels:
   - pytorch
   - defaults

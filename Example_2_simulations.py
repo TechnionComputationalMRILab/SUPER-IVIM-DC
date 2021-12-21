@@ -17,9 +17,9 @@ joblib
 import numpy as np
 import sys
 
-from IVIMNET.utils.hyperparams import hyperparams
-from IVIMNET.utils.checkarg import checkarg
-from IVIMNET.simulations import sim
+from SUPER_IVIM_DC.utils.hyperparams import hyperparams
+from SUPER_IVIM_DC.utils.checkarg import checkarg
+from SUPER_IVIM_DC.simulations import sim
 
 
 key = 'phantom'

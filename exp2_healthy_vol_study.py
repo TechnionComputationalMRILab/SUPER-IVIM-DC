@@ -141,7 +141,7 @@ if __name__ == "__main__":
             np.savetxt(os.path.join(SIGNALS_DIRECTORY, 'healthy_vol_study', 'exp2_SUPER-IVIM-DC_nrmse_table.csv'), np.asarray(nRMSE_table_DC), delimiter=",")
             np.savetxt(os.path.join(SIGNALS_DIRECTORY, 'healthy_vol_study', 'exp2_LS_nrmse_table.csv'), np.asarray(nRMSE_table_lsq), delimiter=",")
 
-    # plot graphs
+    # plot results
     labels = ['D', 'f', 'D*']
     for i,label in enumerate(['D', 'f', 'D*']):
         plt.figure()

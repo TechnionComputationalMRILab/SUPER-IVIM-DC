@@ -214,9 +214,7 @@ def IVIM_fit_sls_lm(N, si, b_vector, bounds, p0, min_bval_high=200):
             del_index.append(i)
     return D, DStar, f, s0, s0_d, del_index
 
-def IVIM_fit_sls_trf(i, N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
-    if (i == 44 ):
-        print('stop')
+def IVIM_fit_sls_trf(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
     D_sls, DStar_sls, f_sls, s0_sls, s0_d, del_index = IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high)
     print(DStar_sls)
     si = np.delete(si, del_index, 1)

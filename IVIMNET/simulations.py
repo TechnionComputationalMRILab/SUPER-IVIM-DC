@@ -46,20 +46,17 @@ def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalue
     Stability is only relevant for neural networks and is calculated from the repeated network training.
     """
     arg = deep.checkarg(arg)
-    # this simulated the signal
 
     IVIM_signal_noisy, D, f, Dp = sim_signal(SNR, arg.sim.bvalues, sims=arg.sim.sims, Dmin=arg.sim.range[0][0],
                                          Dmax=arg.sim.range[1][0], fmin=arg.sim.range[0][1],
                                          fmax=arg.sim.range[1][1], Dsmin=arg.sim.range[0][2],
                                          Dsmax=arg.sim.range[1][2], rician=arg.sim.rician, key = arg.key)
   
-    # prepare a larger array in case we repeat training
     if arg.sim.repeats > 1:
         paramsNN = np.zeros([arg.sim.repeats, 4, arg.sim.num_samples_eval])
     else:
         paramsNN = np.zeros([4, arg.sim.num_samples_eval])
 
-    # if we are not skipping the network for evaluation
     if not arg.train_pars.skip_net:
         # loop over repeats
         for aa in range(arg.sim.repeats):
@@ -89,16 +86,11 @@ def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalue
                     paramsNN = deep.predict_IVIM(IVIM_signal_noisy[:arg.sim.num_samples_eval, :], arg.sim.bvalues, net, arg)
             elapsed_time = time.time() - start_time
             print('\ntime elapsed for inference: {}\n'.format(elapsed_time))
-            # remove network to save memory
-            
-            #del net # I need the net after training
             
             if arg.train_pars.use_cuda:
                torch.cuda.empty_cache()
         print('results for NN')
-        # if we repeat training, then evaluate stability
-        # only remember the D, Dp and f needed for evaluation
-
+      
         X_train = IVIM_signal_noisy[:arg.sim.num_samples_eval, :]
         nan_idx = isnan(np.mean(X_train, axis=1))
         #X_train = np.delete(X_train, nan_idx , axis=0)
@@ -291,8 +283,7 @@ def augmented_signal(data, bvalues, arg, fraction=0.3, Dmin=0.3 / 1000, Dmax=4.0
     return IVIM_signal_noisy[indx_back]
 
 
-def sim_signal(SNR, bvalues, sims=1000000, Dmin=1.37 / 1000, Dmax= 1.93 / 1000, fmin=0.2263, fmax=0.4281, Dsmin=12.83 / 1000, Dsmax= 31.94 / 1000,
-               rician=False, state=123, key = 'sim'):#(SNR, bvalues, sims=100000, Dmin=0.5 / 1000, Dmax=2.0 / 1000, fmin=0.1, fmax=0.5, Dsmin=0.05, Dsmax=0.2,
+def sim_signal(SNR, bvalues, sims=1000000, Dmin=0.5 / 1000, Dmax=2.0 / 1000, fmin=0.1, fmax=0.5, Dsmin=0.05, Dsmax=0.2,
           #     rician=False, state=123, key = 'sim'):
     """
     This simulates IVIM curves. Data is simulated by randomly selecting a value of D, f and D* from within the
@@ -402,11 +393,6 @@ def print_errors(D, f, Dp, params):
     print([normD_lsq, '  ', rmse_D / normD_lsq, ' ', Spearman[0, 0]])
     print([normf_lsq, '  ', rmse_f / normf_lsq, ' ', Spearman[1, 0]])
     print([normDp_lsq, '  ', rmse_Dp / normDp_lsq,' ', Spearman[2, 0]])
-
-    #NOAM
-    # mats = [[normD_lsq, norm_D_pred, std_D_err, rmse_D / normD_lsq, Spearman[0, 0]],
-    #        [normf_lsq, norm_f_pred ,std_f_err, rmse_f / normf_lsq, Spearman[1, 0]],
-    #        [normDp_lsq, norm_Dp_pred, std_Dp_err, rmse_Dp / normDp_lsq, Spearman[2, 0]]]
     
     mats = [[normD_lsq, norm_D_pred, std_D_err, rmse_D / normD_lsq, Spearman[0, 0]],
             [normf_lsq, norm_f_pred ,std_f_err, rmse_f / normf_lsq, Spearman[1, 0]],

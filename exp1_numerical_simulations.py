@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd
 import IVIMNET.deep as deep
 import matplotlib.pyplot as plt
-from train_model import train_model
-from utiles import create_working_folder
+from source.train_model import train_model
+from source.utiles import create_working_folder
 from directories import *
-from hyperparams import hyperparams as hp
+from source.hyperparams import hyperparams as hp
 
 if __name__ == "__main__":
 

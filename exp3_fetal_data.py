@@ -7,14 +7,14 @@ import os
 import json
 import numpy as np
 import pandas as pd
-from plot import *
+from source.plot import *
 import IVIMNET.deep as deep
 import matplotlib.pyplot as plt
-from train_model import train_model
-from utiles import * #create_working_folder, read_data_sitk
+from source.train_model import train_model
+from source.utiles import * #create_working_folder, read_data_sitk
 from directories import *
-from hyperparams import hyperparams as hp
-from Classsic_ivim_fit import IVIM_fit_sls_trf
+from source.hyperparams import hyperparams as hp
+from source.Classsic_ivim_fit import IVIM_fit_sls_trf
 
 
 if __name__ == "__main__":

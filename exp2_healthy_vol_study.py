@@ -12,11 +12,11 @@ import numpy as np
 import pandas as pd
 import IVIMNET.deep as deep
 import matplotlib.pyplot as plt
-from train_model import train_model
-from utiles import create_working_folder
-from hyperparams import hyperparams as hp
+from source.train_model import train_model
+from source.utiles import create_working_folder
+from source.hyperparams import hyperparams as hp
 from directories import *
-from Classsic_ivim_fit import IVIM_fit_sls_trf, IVIM_model
+from source.Classsic_ivim_fit import IVIM_fit_sls_trf, IVIM_model
 
 
 if __name__ == "__main__":

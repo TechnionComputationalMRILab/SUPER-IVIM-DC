@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Sun Feb 13 17:01:47 2022
 
 @author: noam.korngut@bm.technion.ac.il
 """
+
 import os
 import json
 import time
@@ -14,8 +16,8 @@ import IVIMNET.deep as deep
 import matplotlib.pyplot as plt
 from source.train_model import train_model
 from source.utiles import create_working_folder
-from directories import *
 from source.hyperparams import hyperparams as hp
+from directories import *
 
 if __name__ == "__main__":
 

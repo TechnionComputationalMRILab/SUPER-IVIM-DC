@@ -2,8 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Classsic_ivim_fit import IVIM_fit_sls_trf, fitMonoExpModel, IVIM_model
 
-print('noam')
-
 def ivimN_noS0(bvalues, Dt, Fp, Dp):
     # IVIM function in which we try to have equal variance in the different IVIM parameters and S0=1
     return (Fp * np.exp(-bvalues * Dp ) + (1 - Fp) * np.exp(-bvalues * Dt))

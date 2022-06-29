@@ -1,5 +1,6 @@
 WORKING_DIRECTORY = 'checkpoints/'
 FIGURE_DIRECTORY = 'figs/'
-DATA_DIRECTORY = 'data/'
 PROCESSED_DATA_DIRECTORY = 'data/processed/'
+
+DATA_DIRECTORY = 'data/'
 SIGNALS_DIRECTORY = 'signals&params_arrays/'

@@ -13,7 +13,7 @@ SUPER-IVIM-DC has the potential to reduce the long acquisition times associated 
 ## Usage
 
 * Set up relevant folders in `directories.py`
-* 
+* Run each experiment as needed
 
 ## References
 

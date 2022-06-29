@@ -48,8 +48,6 @@ if __name__ == "__main__":
 
     # ================== load data ====================
 
-    
-
     if (minor_motion):
         cases_idx = np.array([647, 693, 697, 710, 756, 794, 798, 800, 801, 807, 817, 819, 828, 844, 856, 860, 877, 887]) # minor motion cases
         GA = np.genfromtxt(os.path.join(SIGNALS_DIRECTORY, 'Fetal', 'GA_minor_motion.csv'), delimiter=',') 

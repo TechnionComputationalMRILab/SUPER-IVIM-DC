@@ -16,8 +16,9 @@ import IVIMNET.deep as deep
 import matplotlib.pyplot as plt
 from source.train_model import train_model
 from source.utiles import create_working_folder
-from source.hyperparams import hyperparams as hp
 from directories import *
+from source.hyperparams import hyperparams as hp
+
 
 if __name__ == "__main__":
 

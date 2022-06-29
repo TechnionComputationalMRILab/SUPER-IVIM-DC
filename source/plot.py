@@ -49,18 +49,6 @@ def plot_IVIM_signal(S0, Dt, Fp, Dp, filename, bvalues, sig_vec, label):
     plt.ylabel("log(S/s0)")
     plt.legend()
 
-
-'''    b_vec = np.arange(0,bvalues.max()+1)
-    si_fit = IVIM_model(b_vec.reshape(-1, 1), D_sls_trf, DStar_sls_trf, f_sls_trf, s0_sls_trf)
-    si_fit_n = np.log(si_fit)
-    plt.figure()
-    plt.plot(bvalues, np.log(fetal_data_norm[i,:]), 'k.', label = 'GT')
-    plt.plot(b_vec, si_fit_n, 'r--', label = 'fit')
-    plt.title('lsq fit')
-    plt.legend()
-    plt.show()
-'''
-
 def ivim4images(b_val, D_star, D, Fp):
     """
     Create ivim model images based ob b values and parameters.

@@ -17,14 +17,15 @@ if __name__ == "__main__":
     b_len = len(bvalues)
 
     # minor motion cases idx
-    case_idx = np.array([647, 693, 697, 710, 756, 794, 798, 800, 801, 807,817,819, 828, 844, 856, 860,  877, 887])
+    case_idx = np.array([647, 693, 697, 710, 756, 794, 798, 800, 801, 807, 817, 819, 828, 844, 856, 860, 877, 887])
 
     if (all_cases):
-        num_cases = 39
+        num_cases = len(os.listdir(cases))
     else:
         num_cases = len(case_idx)
-    all_signals = []
-    signals_mean = []
+    
+    signals_all = [] # signals of all pixels for all cases 
+    signals_mean = [] # average signals over segmentation per case
 
     for idx, filename in enumerate(os.listdir(cases)):
         if (not all_cases):
@@ -38,14 +39,19 @@ if __name__ == "__main__":
 
         slice_select = np.argwhere(seg!=0)
         slice_number = slice_select[0][0]
+        seg_size = slice_select.shape[0]
         mean_signal = np.zeros(b_len)
+        clinic_signal = np.zeros((seg_size, b_len))
         for b_val_idx in range (b_len):
             sig = case[slice_number,:,:, b_val_idx]
             sig = sig[seg[slice_number,:,:]!=0]
+            clinic_signal[:,b_val_idx] = sig
             sig = sig.mean()
             mean_signal[b_val_idx] = sig
         signals_mean.append(mean_signal)
+        signals_all.append(clinic_signal)
 
+        # plot signal 
         plot = 0
         if(plot):
             plt.plot()
@@ -55,19 +61,12 @@ if __name__ == "__main__":
             plt.ylabel("log(S/S0)")
             plt.legend()
 
-        x_idx, y_idx = slice_select[:,1], slice_select[:,2]
-        sx, sy, sb = case[slice_number,x_idx[0]:x_idx[-1]+1,y_idx[0] : y_idx[-1]+1,:].shape #len(set(x_idx)), len(set(y_idx)), b_len
-        clinic_signal = case[slice_number,x_idx[0]:x_idx[-1]+1,y_idx[0] : y_idx[-1]+1,:]
+        # x_idx, y_idx = slice_select[:,1], slice_select[:,2]
+        # sx, sy, sb = case[slice_number,x_idx[0]:x_idx[-1]+1,y_idx[0] : y_idx[-1]+1,:].shape 
+        # clinic_image = case[slice_number,x_idx[0]:x_idx[-1]+1,y_idx[0] : y_idx[-1]+1,:]
 
-        out_signal = clinic_signal.reshape(-1, sb) # list of pixels according to the image columns
-
-        clinic_image = clinic_signal
-        clinic_signal = out_signal
-        all_signals.append(clinic_signal)
-
-    signals_mean, all_signals_arr = np.stack(signals_mean, axis=0), np.vstack(all_signals)
+    signals_mean, signals_all_arr = np.stack(signals_mean, axis=0), np.vstack(signals_all)
     signals_mean = signals_mean[::-1,:]
-    signals_mean_csv = np.asarray(signals_mean)
 
-    np.savetxt(os.path.join(DATA_DIRECTORY, 'fetal', f'fetal_mean_signals_{num_cases}.csv'), signals_mean_csv, delimiter=",")
-    np.savetxt(os.path.join(DATA_DIRECTORY, 'fetal', f'fetal_all_signals_{num_cases}.csv'), all_signals_arr, delimiter=",")
+    np.savetxt(os.path.join(DATA_DIRECTORY, 'fetal', f'fetal_mean_signals_{num_cases}.csv'), np.asarray(signals_mean), delimiter=",")
+    np.savetxt(os.path.join(DATA_DIRECTORY, 'fetal', f'fetal_all_signals_{num_cases}.csv'), signals_all_arr, delimiter=",")

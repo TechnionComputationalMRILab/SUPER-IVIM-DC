@@ -13,11 +13,9 @@ if __name__ == "__main__":
     # ================= Pre Processing DW-MRI Data : =================
 
     processed_folder = PROCESSED_DATA_DIRECTORY
+    
     files_list = glob.glob(f'{processed_folder}b_*.nii.gz')
     files_list = np.array([file.replace('\\','/') for file in files_list ])
-    bvals = np.array([float(file[len(f'{processed_folder}b_'):-7]) for file in files_list])
-
-
     bvals = np.array([float(file[len(f'{processed_folder}b_'):-7]) for file in files_list])
 
     bvals_order = np.argsort(bvals)

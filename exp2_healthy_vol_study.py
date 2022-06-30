@@ -89,11 +89,7 @@ if __name__ == "__main__":
 
 
         # ================== SUPER-IVIM-DC predication ==================
-        coefs = [0.09, 0.1, 0.2, 0.18, 0.25, 0.4]
-        coef = 0.1 #coefs[sf-1] #0.1
-
         ivim_DC_pathSNR50 = f'{output_directory}/20220224-174831/SUPER-IVIM-DC_50_sf_{sf}.pt'
-
         recon_error_comb, Dp_DC, Dt_DC, Fp_DC, S0_DC = deep.infer_clinical_supervised_IVIM(sf_sig, arg.sim.bvalues, ivim_DC_pathSNR50, arg)
         params_DC[:,0,sf-1], params_DC[:,1,sf-1], params_DC[:,2,sf-1], params_DC[:,3,sf-1] = Dt_DC, Fp_DC, Dp_DC, S0_DC
 

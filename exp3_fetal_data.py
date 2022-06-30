@@ -96,7 +96,7 @@ if __name__ == "__main__":
         plt.figure()
         plot_IVIM_signal((S0_net[i]), (Dt_net[i]), (Fp_net[i]), (Dp_net[i]), cases_idx[i], bvalues, fetal_data_norm[i,:], 'IVIMNET')
         plot_IVIM_signal((S0_DC[i]), (Dt_DC[i]), (Fp_DC[i]), (Dp_DC[i]), cases_idx[i], bvalues, fetal_data_norm[i,:], 'SUPER-IVIM-DC')
-        plot_IVIM_signal(params_sls_trf[i, 0], params_sls_trf[i, 1], params_sls_trf[i, 2], params_sls_trf[i, 3], cases_idx[i], bvalues, fetal_data_norm[i,:], 'LS')
+        plot_IVIM_signal(params_sls_trf[i, 3], params_sls_trf[i, 0], params_sls_trf[i, 1], params_sls_trf[i, 2], cases_idx[i], bvalues, fetal_data_norm[i,:], 'LS')
         plt.show()
 
     IVIMNET_params_csv, DC_params_csv = np.asarray(IVIMNET_params), np.asarray(DC_params)

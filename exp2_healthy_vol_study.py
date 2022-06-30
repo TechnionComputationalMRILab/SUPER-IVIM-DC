@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar 29 12:05:54 2022
+Created on Tue Jan 23 12:05:54 2022
 
 @author: noam.korngut@bm.technion.ac.il
 """
@@ -38,11 +38,6 @@ if __name__ == "__main__":
 
             arg.sim.bvalues = np.array(np.concatenate((bvalues_full[0:13:sf],np.array([200]) ,bvalues_full[14:21:j], np.array([1000]))))
 
-            # ======================= Save init =======================
-            init_settings = dict(range = arg.sim.range, cons_max = arg.net_pars.cons_max, cons_min = arg.net_pars.cons_min, bvalues = arg.sim.bvalues, loss_coef = arg.loss_coef_ivim, snr= SNR)
-            with open(f'{work_dir}/init/{mode}_sf_{sf}.json', 'w') as fp:
-                json.dump(init_settings, fp, default=str, indent=4, sort_keys=True)
-
             matNN = train_model(key, arg, mode, sf, work_dir)
 
     # ======================= evaluate model on clinic data =======================
@@ -70,16 +65,13 @@ if __name__ == "__main__":
 
         # ================== LS (sls-trf) fit ====================
         print("**classic fitting - simple map**")
-        #bounds = [[0.0003, 0.009, 0.001, 0.99],[0.01, 0.04,0.5, 1]] # d,d*,f
-        bounds = [[0.0008, 0.009, 0.001, 0.99],[0.01, 0.04,0.5, 1]] # d,d*,f,so#bounds = [[0.0003, 0.009, 0.001, 50],[0.01, 0.04,0.5, 300]] # d,d*,f,so
+        bounds = [[0.0003, 0.009, 0.001, 0.99],[0.01, 0.04,0.5, 1]] # d,d*,f
         p0 = [((bounds[0][0]+bounds[1][0])/2) ,(bounds[0][1]+bounds[1][1])/2, (bounds[0][2]+bounds[1][2])/2 ,
                                                   ((bounds[0][3]+bounds[1][3])/2)]
         N = 1
-
-        b_vector = np.arange(0,bvalues_full.max())
         for k in range(sf_sig.shape[0]):
             sig_sls = sf_sig[k,:]/sf_sig[k,0]
-            D_sls_trf, DStar_sls_trf, f_sls_trf, s0_sls_trf, _, del_index = IVIM_fit_sls_trf(1, sig_sls[:, np.newaxis], arg.sim.bvalues, bounds, p0, min_bval_high=200)
+            D_sls_trf, DStar_sls_trf, f_sls_trf, s0_sls_trf, _, del_index = IVIM_fit_sls_trf(N, sig_sls[:, np.newaxis], arg.sim.bvalues, bounds, p0, min_bval_high=200)
             params_lsq[k,0, sf-1], params_lsq[k,1, sf-1], params_lsq[k,2, sf-1], params_lsq[k,3,sf-1] = D_sls_trf, f_sls_trf, DStar_sls_trf, s0_sls_trf
 
         # ================== IVIMNET prediction ==================
@@ -95,6 +87,7 @@ if __name__ == "__main__":
 
 
         # ================== plot signal ==================
+        b_vector = np.arange(0,bvalues_full.max())
         for l in range(clinic_signal.shape[0]):
 
             D_lsq, f_lsq, DStar_lsq, s0_lsq = params_lsq[l,0,0], params_lsq[l,1,0], params_lsq[l,2,0], params_lsq[l,3,0]
@@ -130,12 +123,8 @@ if __name__ == "__main__":
 
         save = 0
         if (save):
-
-            os.path.join(SIGNALS_DIRECTORY, 'healthy_vol_study', 'exp2_LS_nrmse_table.csv')
-
             np.savetxt(os.path.join(SIGNALS_DIRECTORY, 'healthy_vol_study', 'exp2_IVIMNET_nrmse_table.csv'), np.asarray(nRMSE_table_Net), delimiter=",")
             np.savetxt(os.path.join(SIGNALS_DIRECTORY, 'healthy_vol_study', 'exp2_SUPER-IVIM-DC_nrmse_table.csv'), np.asarray(nRMSE_table_DC), delimiter=",")
-            np.savetxt(os.path.join(SIGNALS_DIRECTORY, 'healthy_vol_study', 'exp2_LS_nrmse_table.csv'), np.asarray(nRMSE_table_lsq), delimiter=",")
 
     # plot results
     labels = ['D', 'f', 'D*']
@@ -145,8 +134,6 @@ if __name__ == "__main__":
         plt.plot(range(1,7), nRMSE_table_Net[i], label = 'IVIMNET')
         plt.scatter(range(1,7), nRMSE_table_Net[i], color='orange')
         plt.scatter(range(1,7), nRMSE_table_DC[i], marker='*', color='blue', s=100)
-        # plt.plot(range(1,7), nRMSE_table_DC[i], marker='*', markerfacecolor='blue', markersize=12)
-        #plt.plot(range(1,7), nRMSE_table_lsq[i], label = 'sls_trf')
         plt.title(label, fontdict={'fontsize': 25})
         plt.xlabel("sampling factor", fontdict={'fontsize': 22})
         plt.ylabel("nrmse", fontdict={'fontsize': 22})
@@ -154,15 +141,6 @@ if __name__ == "__main__":
  
         plt.savefig(os.path.join(FIGURE_DIRECTORY, f'exp2_{label}_lsq_nrmse.eps'), format='eps', dpi=300, bbox_inches = 'tight')
 
-    for i,label in enumerate(['D', 'f', 'D*']):
-        plt.figure()
-        plt.plot(range(1,7), nRMSE_table_lsq[:,i], label = 'sls_trf')
-        plt.title(str(labels[i]), fontdict={'fontsize': 25})
-        plt.xlabel("sampling factor", fontdict={'fontsize': 22})
-        plt.ylabel("nrmse", fontdict={'fontsize': 22})
-        plt.legend(prop={'size': 16})
-
-        plt.savefig(os.path.join(FIGURE_DIRECTORY, f'exp2_{label}_lsq_nrmse.eps'), format='eps', dpi=300, bbox_inches = 'tight')
-        
+  
        
 

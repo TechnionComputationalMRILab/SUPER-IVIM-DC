@@ -22,13 +22,15 @@ def train_model(key, arg, mode, sf, work_dir):
             coef = [0.1,0.1,0.2,0.35,0.4] #[0.09, 0.1, 0.2, 0.18, 0.25, 0.4]
             arg.loss_coef_ivim = coef[sf-1]
         arg.train_pars.ivim_combine = True
-        arg = deep.checkarg(arg)
-
+        
     elif (mode == 'IVIMNET'):
         supervised = False
         arg.train_pars.ivim_combine = False
-        arg = deep.checkarg(arg)
-
+        
+    init_settings = dict(range = arg.sim.range, cons_max = arg.net_pars.cons_max, cons_min = arg.net_pars.cons_min, bvalues = arg.sim.bvalues, loss_coef = arg.loss_coef_ivim, depth = arg.net_pars.depth, snr = SNR)
+    with open(f'{work_dir}/init/{mode}_sf_{sf}.json', 'w') as fp:
+      json.dump(init_settings, fp, default=str, indent=4, sort_keys=True)
+    
     matNN,_  = sim.sim(SNR, arg, supervised, sf, mode, work_dir)
 
     return matNN

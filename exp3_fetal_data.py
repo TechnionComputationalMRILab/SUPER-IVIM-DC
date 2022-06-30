@@ -37,12 +37,6 @@ if __name__ == "__main__":
     SNR = arg.sim.SNR[0]
     arg.sim.num_samples_eval = 256*256
 
-    # ======================= Save init =======================
-    init_settings = dict(range = arg.sim.range, cons_max = arg.net_pars.cons_max, cons_min = arg.net_pars.cons_min, bvalues = arg.sim.bvalues, loss_coef = arg.loss_coef_ivim, snr= SNR)
-    with open(f'{work_dir}/init.json', 'w') as fp:
-        json.dump(init_settings, fp, default=str, indent=4, sort_keys=True)
-    # =========================================================
-
     for mode in ['IVIMNET', 'SUPER-IVIM-DC']:
         matNN = train_model(key, arg, mode, 1, work_dir)
 
@@ -61,13 +55,13 @@ if __name__ == "__main__":
 
     fetal_data = np.genfromtxt(os.path.join(DATA_DIRECTORY, 'fetal', f'fetal_mean_signals_{num_cases}.csv'), delimiter=',')
     fetal_S0 = fetal_data[:,0][:, np.newaxis]
-    fetal_data_norm = fetal_data/fetal_S0 #normlize data by S0
+    fetal_data_norm = fetal_data/fetal_S0 # normalize data by S0
 
     # ================== LS (sls-trf) fit ====================
     params_sls_trf = np.zeros((num_cases,4))
 
     N = 1
-    bounds = [[0.0003, 0.009, 0.001, 0.99],[0.01, 0.04,0.5, 1]] #[[0, 0, 0.1, 0.9],[0.003, 0.03, 0.7, 1]] # d,d*,f,so
+    bounds = [[0.0003, 0.009, 0.001, 0.99],[0.01, 0.04,0.5, 1]]  # d,d*,f,so
     p0 = [((bounds[0][0]+bounds[1][0])/2) ,(bounds[0][1]+bounds[1][1])/2, (bounds[0][2]+bounds[1][2])/2 ,
           ((bounds[0][3]+bounds[1][3])/2)]
     for i in range(num_cases):
@@ -79,7 +73,7 @@ if __name__ == "__main__":
         if (save):
             np.savetxt(os.path.join(SIGNALS_DIRECTORY, 'Fetal', f'exp3_LS_params_{num_cases}_{bounds}.csv'), np.asarray(params_sls_trf), delimiter=",")
 
-    # ================== DL fit ====================
+    # ======================= DL fit ========================
 
     IVIMNET_params, DC_params = np.zeros((num_cases, 4)), np.zeros((num_cases, 4))
 

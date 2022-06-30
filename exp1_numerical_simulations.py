@@ -36,16 +36,10 @@ if __name__ == "__main__":
             bvalues = arg.sim.bvalues
             arg.sim.num_samples_eval = 256*256
             arg.sim.bvalues = np.array(np.concatenate((bvalues[0:12:sf], np.array([200,400,600,800]))))
-
-            # ======================= Save init =======================
-            init_settings = dict(range = arg.sim.range, cons_max = arg.net_pars.cons_max, cons_min = arg.net_pars.cons_min, bvalues = arg.sim.bvalues, loss_coef = arg.loss_coef_ivim, snr= SNR)
-            with open(f'{work_dir}/init/{mode}_sf_{sf}.json', 'w') as fp:
-                json.dump(init_settings, fp, default=str, indent=4, sort_keys=True)
-
+            
             matNN = train_model(key, arg, mode, sf, work_dir)
 
-            matNN = np.asarray(matNN)
-            np.savetxt(f'{work_dir}/exp1_{mode}_NRMSE_snr_{SNR}_sf_{sf}.csv', matNN, delimiter=",")
+            np.savetxt(f'{work_dir}/exp1_{mode}_NRMSE_snr_{SNR}_sf_{sf}.csv', np.asarray(matNN), delimiter=",")
 
     # ================== plot NRMSE tables ====================
 

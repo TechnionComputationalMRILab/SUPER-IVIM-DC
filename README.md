@@ -12,8 +12,12 @@ SUPER-IVIM-DC has the potential to reduce the long acquisition times associated 
 
 ## Usage
 
-* Set up relevant folders in `directories.py`
-* Run each experiment as needed
+* modify `main.py` as needed (bvalues, SNR, working directory, sampling factor)
+* create a conda environment: `conda create --name super_ivim_dc python=3.10`
+* install packages: `pip install -r requirements.txt`
+* run the simulation: `python main.py`
+
+CUDA is recommended but not required
 
 ## References
 

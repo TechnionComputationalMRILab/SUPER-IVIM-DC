@@ -3,9 +3,6 @@ import time
 import numpy as np
 import SimpleITK as sitk
 
-import json
-import pickle
-import shutil
 
 def nrmse_calc(lsq_params, deep_params):
     rmse = np.sqrt(np.square(np.subtract(deep_params , lsq_params).mean()))

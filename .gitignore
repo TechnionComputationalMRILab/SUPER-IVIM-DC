@@ -1,3 +1,6 @@
+checkpoints/**
+test/**
+
 old/
 results
 plots

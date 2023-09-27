@@ -284,7 +284,8 @@ def augmented_signal(data, bvalues, arg, fraction=0.3, Dmin=0.3 / 1000, Dmax=4.0
 
 
 def sim_signal(SNR, bvalues, sims=1000000, Dmin=0.5 / 1000, Dmax=2.0 / 1000, fmin=0.1, fmax=0.5, Dsmin=0.05, Dsmax=0.2,
-          #     rician=False, state=123, key = 'sim'):
+              rician=False, state=123, key = 'sim'
+              ):
     """
     This simulates IVIM curves. Data is simulated by randomly selecting a value of D, f and D* from within the
     predefined range.

@@ -8,28 +8,30 @@ Created on Sun Feb 13 17:01:47 2022
 """
 
 import os
-import json
-import time
 import numpy as np
 import pandas as pd
-import IVIMNET.deep as deep
 import matplotlib.pyplot as plt
+
+from directories import *
+import IVIMNET.deep as deep
 from source.train_model import train_model
 from source.utiles import create_working_folder
-from directories import *
 from source.hyperparams import hyperparams as hp
 
 
 if __name__ == "__main__":
 
+    max_sf = 7
     key = 'sim'
 
     output_directory = os.path.join(WORKING_DIRECTORY, "exp1_simulations") 
     work_dir = create_working_folder(output_directory)
 
     # ======================= Training =======================
-    for mode in ['IVIMNET', 'SUPER-IVIM-DC']:
-        for sf in range(1,7):
+    # for mode in ['IVIMNET', 'SUPER-IVIM-DC']:
+    for mode in ['SUPER-IVIM-DC', 'IVIMNET']:
+        # for sf in range(1,7):
+        for sf in range(1, max_sf):
             arg = hp(key)
             arg = deep.checkarg(arg)
             SNR = arg.sim.SNR[0]
@@ -45,7 +47,8 @@ if __name__ == "__main__":
 
     NRMSE_table = np.zeros((2,6,3)) # mode (IVIMNET, SUPER_IVIM_DC), sf (1-6), param (D,f,D*)
 
-    for sf in range (1,7):
+    # for sf in range (1,7):
+    for sf in range(1, max_sf):
         for i, mode in enumerate(['IVIMNET', 'SUPER-IVIM-DC']):
 
             nrmse = np.genfromtxt(f'{work_dir}/exp1_{mode}_NRMSE_snr_{SNR}_sf_{sf}.csv', delimiter=',')

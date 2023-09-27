@@ -957,7 +957,7 @@ def learn_supervised_IVIM(X_train, labels, bvalues ,arg,  sf, snr, mode, work_di
             Dt_coeff = (arg.loss_coef_Dt).to(arg.train_pars.device)
             Fp_coeff = (arg.loss_coef_Fp).to(arg.train_pars.device)
             if ivim_combine:
-                 ivim_coeff = arg.loss_coef_ivim.to(arg.train_pars.device)
+                 ivim_coeff = torch.FloatTensor([arg.loss_coef_ivim]).to(arg.train_pars.device)
                  loss = Dp_coeff*Dp_loss + Dt_coeff*Dt_loss + Fp_coeff*Fp_loss + ivim_coeff*ivim_loss
             else:
                 loss = Dp_coeff*Dp_loss + Dt_coeff*Dt_loss + Fp_coeff*Fp_loss

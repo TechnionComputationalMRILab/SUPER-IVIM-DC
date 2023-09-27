@@ -28,7 +28,8 @@ if __name__ == "__main__":
 
     # ======================= training =======================
 
-    for mode in ['IVIMNET', 'SUPER-IVIM-DC']:
+    # for mode in ['IVIMNET', 'SUPER-IVIM-DC']:
+    for mode in ['SUPER-IVIM-DC', 'IVIMNET']:
         for sf in range(1,7):
             arg = hp(key)
             arg = deep.checkarg(arg)
@@ -36,7 +37,8 @@ if __name__ == "__main__":
             bvalues_full = arg.sim.bvalues
             arg.sim.num_samples_eval = 256*256
 
-            arg.sim.bvalues = np.array(np.concatenate((bvalues_full[0:13:sf],np.array([200]) ,bvalues_full[14:21:j], np.array([1000]))))
+            # arg.sim.bvalues = np.array(np.concatenate((bvalues_full[0:13:sf],np.array([200]) ,bvalues_full[14:21:j], np.array([1000]))))
+            arg.sim.bvalues = np.array(np.concatenate((bvalues_full[0:13:sf],np.array([200]) ,bvalues_full[14:21:sf], np.array([1000]))))
 
             matNN = train_model(key, arg, mode, sf, work_dir)
 

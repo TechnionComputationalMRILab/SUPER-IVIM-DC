@@ -1,5 +1,7 @@
-checkpoints/**
-test/**
+checkpoints/
+test/
+output/
+figs/
 
 old/
 results

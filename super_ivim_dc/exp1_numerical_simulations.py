@@ -54,7 +54,7 @@ if __name__ == "__main__":
             nrmse = np.genfromtxt(f'{work_dir}/exp1_{mode}_NRMSE_snr_{SNR}_sf_{sf}.csv', delimiter=',')
             NRMSE_table[i,sf-1,:] = nrmse[:,3]
 
-    for i, label in enumerate(['D', 'f', 'D*']):
+    for i, label in enumerate(['D', 'f', 'Dst']):
         plt.figure()
         plt.plot(range(1,7), NRMSE_table[1,:,i] ,label = 'SUPER-IVIM-DC')
         plt.plot(range(1,7), NRMSE_table[0,:,i] ,label = 'IVIMNET')

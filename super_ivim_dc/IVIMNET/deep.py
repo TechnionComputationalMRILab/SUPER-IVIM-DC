@@ -1,32 +1,23 @@
 """
 Built on code by Sebastiano Barbieri: https://github.com/sebbarb/deep_ivim
-
-requirements:
-numpy
-torch
-tqdm
-matplotlib
-scipy
-joblib
 """
-# import libraries
+import os
+import copy
+import warnings
 
+from tqdm import tqdm
+from matplotlib import pyplot as plt
 import numpy as np
+from joblib import Parallel, delayed
+from scipy.optimize import curve_fit
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as utils
-#from torch.utils.data import Subset
-from tqdm import tqdm
-#import matplotlib
-#matplotlib.use('TkAgg')
-from matplotlib import pyplot as plt
-import os
-import IVIMNET.fitting_algorithms as fit
-from joblib import Parallel, delayed
-import copy
-import warnings
-from scipy.optimize import curve_fit
+
+from . import fitting_algorithms as fit
+
 
 # Define the neural network.
 class Net(nn.Module):
@@ -1042,11 +1033,14 @@ def learn_supervised_IVIM(X_train, labels, bvalues ,arg,  sf, snr, mode, work_di
         if ivim_combine:
             acum_loss_recon.append(running_loss_recon)
             val_loss_recon.append(running_loss_recon_val)
-            loss_plot_supervised(acum_loss_Dp, acum_loss_Dt, acum_loss_Fp, loss_train, loss_val, 
-                             val_loss_Dp, val_loss_Dt, val_loss_Fp, acum_loss_recon, val_loss_recon)
+
+            if arg.fig:
+                loss_plot_supervised(acum_loss_Dp, acum_loss_Dt, acum_loss_Fp, loss_train, loss_val, 
+                                val_loss_Dp, val_loss_Dt, val_loss_Fp, acum_loss_recon, val_loss_recon)
         else:
-            loss_plot_supervised(acum_loss_Dp, acum_loss_Dt, acum_loss_Fp, loss_train, loss_val, 
-                             val_loss_Dp, val_loss_Dt, val_loss_Fp)
+            if arg.fig:
+                loss_plot_supervised(acum_loss_Dp, acum_loss_Dt, acum_loss_Fp, loss_train, loss_val, 
+                                val_loss_Dp, val_loss_Dt, val_loss_Fp)
         # as discussed in the article, LR is important. This approach allows to reduce the LR if we think it is too
         # high, and return to the network state before it went poorly
         if arg.train_pars.scheduler:
@@ -1642,7 +1636,7 @@ def loss_plot_supervised(loss_Dp, loss_Dt, loss_Fp, loss_train,
         plt.show()
     
 if __name__ == "__main__":
-    from hyperparams import hyperparams as hp
+    from ..hyperparams import hyperparams as hp
     import simulations
     from os import listdir
     from os.path import isfile, join
@@ -1663,9 +1657,12 @@ if __name__ == "__main__":
         #IVIM_clinical, sb, sx, sy, b_val = simulations.clinical_signal()
         ### select only relevant values, delete background and noise, and normalise data
         
-        mypath_IVIMNET = '/tcmldrive/Noam/Elad_Net/IVIMNET_saved_models/SNR_20_IVIMNET.pt'
-        mypath_IVIMSUPER = '/tcmldrive/Noam/Elad_Net/IVIMSUPER_saved_models/SNR20_IVIMSUPER.pt'
+        # mypath_IVIMNET = '/tcmldrive/Noam/Elad_Net/IVIMNET_saved_models/SNR_20_IVIMNET.pt'
+        # mypath_IVIMSUPER = '/tcmldrive/Noam/Elad_Net/IVIMSUPER_saved_models/SNR20_IVIMSUPER.pt'
         
+        mypath_IVIMNET = r'C:\Users\ang.a\Documents\SUPER-IVIM-DC\checkpoints\exp1_simulations\20231002-073626\IVIMNET_SNR_10_sf_1.pt'
+        mypath_IVIMSUPER = r'C:\Users\ang.a\Documents\SUPER-IVIM-DC\checkpoints\exp1_simulations\20231002-073626\SUPER-IVIM-DC_SNR_10_sf_1.pt'
+
         #ivim_error, Dp_infer, Dt_infer, Fp_infer, S0_infer = infer_clinical_supervised_IVIM(IVIM_clinical, b_val, mypath_IVIMSUPER, arg)
     
         DtNET_error, FpNET_error, DpNET_error, S0NET_error = infer_supervised_IVIM(IVIM_signal_noisy, labels, bvalues, mypath_IVIMNET, arg)

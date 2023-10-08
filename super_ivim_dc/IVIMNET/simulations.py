@@ -1,24 +1,15 @@
-"""
-requirements:
-numpy
-torch
-tqdm
-matplotlib
-scipy
-joblib
-"""
-
 import os
 import time
-import torch
 import random
-import numpy as np
-import scipy.stats as scipy
-import IVIMNET.deep as deep
-import matplotlib.pyplot as pl
-import IVIMNET.fitting_algorithms as fit
 
-import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import scipy.stats as scipy
+
+from . import deep
+from . import fitting_algorithms as fit
+
 
 def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalues, arg, sf, snr, mode
     """ This function defines how well the different fit approaches perform on simulated data. Data is simulated by
@@ -471,15 +462,15 @@ def sim_signal_predict(arg, SNR):
     for i in range(sx):
         for j in range(sy):
             if (40 < i < 60) and (40 < j < 60):
-                # region 0
+                # region0
                 dwi_image[i, j, :] = fit.ivim(arg.sim.bvalues, Dt_region0, Fp_region0, Dp_region0, S0_region0)
                 Dp_truth[i, j], Dt_truth[i, j], Fp_truth[i, j] = Dp_region0, Dt_region0, Fp_region0
             elif (20 < i < 80) and (20 < j < 80):
-                # region 1
+                # region1
                 dwi_image[i, j, :] = fit.ivim(arg.sim.bvalues, Dt_region1, Fp_region1, Dp_region1, S0_region1)
                 Dp_truth[i, j], Dt_truth[i, j], Fp_truth[i, j] = Dp_region1, Dt_region1, Fp_region1
             else:
-                # region 2
+                # region2
                 dwi_image[i, j, :] = fit.ivim(arg.sim.bvalues, Dt_region2, Fp_region2, Dp_region2, S0_region2)
                 Dp_truth[i, j], Dt_truth[i, j], Fp_truth[i, j] = Dp_region2, Dt_region2, Fp_region2
 

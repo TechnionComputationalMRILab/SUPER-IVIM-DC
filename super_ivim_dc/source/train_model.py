@@ -1,5 +1,5 @@
 import json
-import IVIMNET.simulations as sim
+from ..IVIMNET import simulations as sim
 
 def train_model(key, arg, mode, sf, work_dir):
 

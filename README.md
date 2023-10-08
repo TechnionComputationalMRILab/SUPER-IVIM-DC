@@ -12,8 +12,26 @@ SUPER-IVIM-DC has the potential to reduce the long acquisition times associated 
 
 ## Usage
 
-* Set up relevant folders in `directories.py`
-* Run each experiment as needed
+Clone and install the package using `pip install .`
+
+### Run simulation
+Use as a python package:
+```
+from super_ivim_dc.simulate import simulate
+simulate()
+```
+
+or use as a script: `super-ivim-dc-sim`
+
+This will create a directory called `output` in your current working directory, which will contain the pytorch model of the simulation.
+See super_ivim_dc/simulate.py for possible arguments
+
+### Run inference
+As a package:
+```
+from super_ivim_dc.infer import infer
+infer()
+```
 
 ## References
 

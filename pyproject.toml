@@ -7,7 +7,7 @@ name = "super-ivim-dc"
 version = "0.1"
 description = ""
 authors = []
-license = ""
+license = "LICENSE"
 readme = "README.md"
 
 dependencies = [

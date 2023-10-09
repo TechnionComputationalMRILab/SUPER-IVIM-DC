@@ -27,6 +27,8 @@ def infer_entry():
 
     parser.add_argument("--super-ivim-dc", default=None, help="SUPER-IVIM-DC model path")
 
+    parser.add_argument("--fig", "-f", default="./output", help="Save figure path")
+
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose")
 
     args = parser.parse_args()
@@ -47,14 +49,23 @@ def infer_entry():
         print(f"IVIMNET model path: {args.ivimnet}")
         print(f"SUPER-IVIM-DC model path: {args.super_ivim_dc}")
 
-    infer(args.snr, bvalues, args.sample_size, args.ivimnet, args.super_ivim_dc)
+    infer(
+        SNR=args.snr, 
+        bvalues=bvalues, 
+        sample_size=args.sample_size, 
+        ivimnet_path=args.ivimnet, 
+        super_ivim_dc_path=args.super_ivim_dc, 
+        save_figure_to=args.fig
+    )
 
 def infer(
         SNR=10, 
         bvalues=DEFAULT_BVALUE_LIST, 
         sample_size=100,
         ivimnet_path=None,
-        super_ivim_dc_path=None,):
+        super_ivim_dc_path=None,
+        save_figure_to="./output"
+    ):
 
     arg = hp()
     arg = deep.checkarg(arg)
@@ -123,4 +134,4 @@ def infer(
         ], axis=1)
         bp_title = "IVIMNET VS IVIMSUPER parameters error SNR=10"
         
-        deep.boxplot_ivim(errors_np_array, bp_title)
+        deep.boxplot_ivim(errors_np_array, bp_title, save_figure_to)

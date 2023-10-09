@@ -1544,8 +1544,8 @@ def infer_leastsquares_IVIM(X_infer, labels, bvalues, arg):
 
 
 
-def boxplot_ivim(all_data, title):
-
+def boxplot_ivim(all_data, title, save_to=None):
+    from pathlib import Path
     
     labels = ['D*_NET', 'D*_SUPER','Dt_NET', 'Dt_SUPER','Fp_NET','Fp_SUPER']
     fig, ax = plt.subplots()
@@ -1568,8 +1568,12 @@ def boxplot_ivim(all_data, title):
     ax.set_xlabel('IVIM Parameters')
     ax.set_ylabel('Observed values')
     ax.set_ylim(0, 1.5)
-    plt.show()
-    
+
+    if save_to is None:
+        plt.show()
+    else:
+        plt.savefig(Path(save_to) / "boxplot.png")
+
 def loss_plot_supervised(loss_Dp, loss_Dt, loss_Fp, loss_train,
                          loss_val, val_loss_Dp, val_loss_Dt, val_loss_Fp, 
                          loss_recon = [], val_loss_recon = []):

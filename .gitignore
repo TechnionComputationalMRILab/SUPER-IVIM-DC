@@ -2,6 +2,7 @@ checkpoints/
 test/
 output/
 figs/
+working_dir/
 
 old/
 results

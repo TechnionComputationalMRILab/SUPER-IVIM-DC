@@ -135,3 +135,23 @@ def infer(
         bp_title = "IVIMNET VS IVIMSUPER parameters error SNR=10"
         
         deep.boxplot_ivim(errors_np_array, bp_title, save_figure_to)
+
+
+def infer_signal(
+        signal,
+        labels,
+        bvalues,
+        model_path
+):
+    
+    arg = hp()
+    arg = deep.checkarg(arg)
+    DtNET_error, FpNET_error, DpNET_error, S0NET_error = deep.infer_supervised_IVIM(
+        signal, 
+        labels, 
+        bvalues, 
+        model_path, 
+        arg
+    )
+
+    return DtNET_error, FpNET_error, DpNET_error, S0NET_error

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "super-ivim-dc"
-version = "0.1"
+version = "0.2"
 description = ""
 authors = []
 license = { file = "LICENSE" }

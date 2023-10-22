@@ -1205,6 +1205,8 @@ def infer_supervised_IVIM(X_infer, labels, bvalues, ivim_path, arg):
     
     # The b-values that get into the model need to be torch Tensor type.
     bvalues = torch.FloatTensor(bvalues[:]).to(arg.train_pars.device)
+    X_infer = torch.from_numpy(X_infer).to(arg.train_pars.device)
+
     #load the pretrained network
     ivim_model = Net(bvalues, arg.net_pars).to(arg.train_pars.device)
     ivim_model.load_state_dict(torch.load(ivim_path))
@@ -1219,9 +1221,13 @@ def infer_supervised_IVIM(X_infer, labels, bvalues, ivim_path, arg):
         labels = np.delete(labels, nan_idx , axis=0) # Dt, f, Dp
         print('phantom training')
     else:
-        S0 = np.mean(X_infer[: , bvalues == 0], axis=1).astype('<f')
+        # print(torch.mean(X_infer[: , bvalues == 0], axis=1))
+        S0 = torch.mean(X_infer[: , bvalues == 0], axis=1)
         X_infer = X_infer / S0[:, None]
-        nan_idx =  isnan(np.mean(X_infer, axis=1))
+        nan_idx =  isnan(torch.mean(X_infer, axis=1))
+
+        X_infer = X_infer.cpu().numpy()
+        nan_idx = nan_idx.cpu().numpy()
         X_infer = np.delete(X_infer, nan_idx , axis=0)
         labels = np.delete(labels, nan_idx , axis=0) # Dt, f, Dp
     
@@ -1232,6 +1238,7 @@ def infer_supervised_IVIM(X_infer, labels, bvalues, ivim_path, arg):
         b_greater_700_idx = np.percentile(X_infer[:, bvalues > 1000], 95, axis=1) < 1 # X_train = X_train[np.percentile(X_train[:, bvalues > 150], 95, axis=1) < 1.0]
         thresh_idx = b_less_300_idx & b_greater_300_idx & b_greater_700_idx
     else: 
+        bvalues = bvalues.cpu().numpy()
         b_less_50_idx = np.percentile(X_infer[:, bvalues < 50], 95, axis=1) < 1.3 # X_train = X_train[np.percentile(X_train[:, bvalues < 50], 95, axis=1) < 1.3]
         b_greater_50_idx = np.percentile(X_infer[:, bvalues > 50], 95, axis=1) < 1.2 #  X_train = X_train[np.percentile(X_train[:, bvalues > 50], 95, axis=1) < 1.2]
         b_greater_150_idx = np.percentile(X_infer[:, bvalues > 150], 95, axis=1) < 1 # X_train = X_train[np.percentile(X_train[:, bvalues > 150], 95, axis=1) < 1.0]
@@ -1260,7 +1267,7 @@ def infer_supervised_IVIM(X_infer, labels, bvalues, ivim_path, arg):
             
             suprevised_batch = suprevised_batch.to(arg.train_pars.device)
             X_batch = suprevised_batch[: ,:n_bval] 
-            
+
             Dp_batch = suprevised_batch[: ,-1] 
             Fp_batch = suprevised_batch[: ,-2] 
             Dt_batch = suprevised_batch[: ,-3]
@@ -1275,7 +1282,7 @@ def infer_supervised_IVIM(X_infer, labels, bvalues, ivim_path, arg):
             try:
                 S0 = np.append(S0, (S0t.cpu()).numpy())
             except:
-                S0 = np.append(S0, S0t)
+                S0 = np.append(S0.cpu().numpy(), S0t.cpu().numpy())
             
             Dp_infer = np.append(Dp_infer, (Dpt.cpu()).numpy())
             Dt_infer = np.append(Dt_infer, (Dtt.cpu()).numpy())

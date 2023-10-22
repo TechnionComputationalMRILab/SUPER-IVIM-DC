@@ -82,7 +82,7 @@ def infer(
         Dsmax=arg.sim.range[1][2], 
         rician=arg.sim.rician
     )
-    
+
     labels = np.stack((D, f, Dp), axis=1).squeeze()  
     
     if ivimnet_path is not None:

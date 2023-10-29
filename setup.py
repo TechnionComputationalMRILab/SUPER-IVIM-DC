@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="super-ivim-dc",
-    version="0.2.1",
+    version="0.3.0",
     packages=find_packages(),
     install_requires=[
         "numpy==1.25.2",
@@ -17,8 +17,8 @@ setup(
     entry_points={
         'console_scripts': [
             'super-ivim-dc = super_ivim_dc.main:main',
-            'super-ivim-dc-sim-infer = super_ivim_dc.infer:infer_entry',
-            'super-ivim-dc-sim = super_ivim_dc.simulate:simulate_entry',
+            'super-ivim-dc-train = super_ivim_dc.train:train_entry',
+            'super-ivim-dc-infer = super_ivim_dc.infer:infer_entry',
         ],
     },
 )

@@ -199,7 +199,7 @@ class Net(nn.Module):
         else:
             return X, Dtout, Fpout, Dpout, torch.ones(len(Dtout))
 
-def learn_IVIM(X_train, bvalues, arg, sf, snr, mode, work_dir ,net=None):
+def learn_IVIM(X_train, bvalues, arg, sf, snr, mode, work_dir, filename, net=None):
     """
     This program builds a IVIM-NET network and trains it.
     :param X_train: 2D array of IVIM data we use for training. First axis are the voxels and second axis are the b-values
@@ -209,7 +209,8 @@ def learn_IVIM(X_train, bvalues, arg, sf, snr, mode, work_dir ,net=None):
     :param net: an optional input pre-trained network with initialized weights for e.g. transfer learning or warm start
     :return net: returns a trained network
     """
-    print(X_train.shape[0], 'noam')
+    if arg.verbose:
+        print(X_train.shape[0], 'noam')
     torch.backends.cudnn.benchmark = True
     arg = checkarg(arg)
 
@@ -397,7 +398,7 @@ def learn_IVIM(X_train, bvalues, arg, sf, snr, mode, work_dir ,net=None):
     save_state_model = True
     if save_state_model:
         final_weights = net.state_dict()
-        torch.save(final_weights, f'{work_dir}/{mode}_SNR_{snr}_sf_{sf}.pt')
+        torch.save(final_weights, f'{work_dir}/{filename}.pt')
     return net
 
 def load_optimizer(net, arg):
@@ -713,6 +714,9 @@ def checkarg(arg):
     if not hasattr(arg, 'fit'):
         warnings.warn('arg no lsq. Using default initialisation')
         arg.fit = lsqfit()
+    if not hasattr(arg, 'verbose'):
+        arg.verbose = True
+
     arg.net_pars=checkarg_net_pars(arg.net_pars)
     arg.train_pars = checkarg_train_pars(arg.train_pars)
     arg.sim = checkarg_sim(arg.sim)
@@ -776,7 +780,7 @@ class sim:
                   [0.003, 0.55, 0.1])
    
 
-def learn_supervised_IVIM(X_train, labels, bvalues ,arg,  sf, snr, mode, work_dir, net=None):
+def learn_supervised_IVIM(X_train, labels, bvalues ,arg,  sf, snr, mode, work_dir, filename, net=None):
     """
     This program builds supervised IVIM-NET network and trains it.
     :param suprevised_data: 2D array of IVIM data we use for training. First axis are the voxels and second axis are the b-values
@@ -795,7 +799,7 @@ def learn_supervised_IVIM(X_train, labels, bvalues ,arg,  sf, snr, mode, work_di
     arg = checkarg(arg)
     n_bval = len(bvalues)
     ivim_combine = arg.train_pars.ivim_combine
-    print(f'\n \n ivim combine flag is {ivim_combine}\n \n ')
+    # print(f'\n \n ivim combine flag is {ivim_combine}\n \n ')
 
     ## normalise the signal to b=0 and remove data with nans
     if arg.key == 'phantom':
@@ -1095,8 +1099,9 @@ def learn_supervised_IVIM(X_train, labels, bvalues ,arg,  sf, snr, mode, work_di
     save_state_model = True
     if save_state_model:
         final_weights = net.state_dict()
-        torch.save(final_weights, f'{work_dir}/{mode}_SNR_{snr}_sf_{sf}.pt')#save the model trained_model.state_dict()
+        torch.save(final_weights, f'{work_dir}/{filename}.pt')#save the model trained_model.state_dict()
     return net
+
 
 def predict_supervised_IVIM(X_train, labels, bvalues, net, arg):
     """

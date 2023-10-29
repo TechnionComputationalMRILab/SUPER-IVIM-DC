@@ -24,7 +24,7 @@ class train_pars:
         self.device = torch.device("cuda:0" if self.use_cuda else "cpu")
         self.select_best = False
         self.ivim_combine = True # if True uses SUPER-IVIM-DC else IVIMNET
-        print(f'ivim combine value {self.ivim_combine}')
+        # print(f'ivim combine value {self.ivim_combine}')
 
 class net_pars:
     def __init__(self,nets):
@@ -94,7 +94,7 @@ class sim:
         self.rician = True # False # adds rician noise to simulations; if false, gaussian noise is added instead
         self.range = ([0.0005, 0.05, 0.01],
                       [0.003, 0.55, 0.1])
-        print(f'simulative model - {self.SNR} SNR, {self.sims} samples, rician noise is set to {self.rician}, bvalues are: {self.bvalues}')
+        print(f'simulative model \n {self.SNR} SNR \n {self.sims} samples \n rician noise is set to {self.rician} \n bvalues are: {self.bvalues}')
 
 class sim_clinic:
     def __init__(self):

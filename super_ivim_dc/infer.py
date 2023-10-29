@@ -2,9 +2,6 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .IVIMNET import deep
-from .IVIMNET import simulations
-from .source.hyperparams import hyperparams as hp
 
 DEFAULT_BVALUE_LIST = np.array([0,15,30,45,60,75,90,105,120,135,150,175,200,400,600,800])
 # SAMPLE_SIZE = np.array([10, 50, 100, 250, 500, 1000, 2000])
@@ -49,23 +46,27 @@ def infer_entry():
         print(f"IVIMNET model path: {args.ivimnet}")
         print(f"SUPER-IVIM-DC model path: {args.super_ivim_dc}")
 
-    infer(
-        SNR=args.snr, 
-        bvalues=bvalues, 
-        sample_size=args.sample_size, 
-        ivimnet_path=args.ivimnet, 
-        super_ivim_dc_path=args.super_ivim_dc, 
-        save_figure_to=args.fig
-    )
+    # infer(
+    #     SNR=args.snr, 
+    #     bvalues=bvalues, 
+    #     sample_size=args.sample_size, 
+    #     ivimnet_path=args.ivimnet, 
+    #     super_ivim_dc_path=args.super_ivim_dc, 
+    #     save_figure_to=args.fig
+    # )
 
-def infer(
+def test_infer(
         SNR=10, 
         bvalues=DEFAULT_BVALUE_LIST, 
         sample_size=100,
-        ivimnet_path=None,
-        super_ivim_dc_path=None,
+        work_dir="./output",
+        super_ivim_dc_filename='super_ivim_dc',  # do not include .pt
+        ivimnet_filename='ivimnet',  # do not include .pt
         save_figure_to="./output"
     ):
+    from .IVIMNET import deep
+    from .IVIMNET import simulations
+    from .source.hyperparams import hyperparams as hp
 
     arg = hp()
     arg = deep.checkarg(arg)
@@ -85,45 +86,30 @@ def infer(
 
     labels = np.stack((D, f, Dp), axis=1).squeeze()  
     
-    if ivimnet_path is not None:
+    if ivimnet_filename is not None:
         DtNET_error, FpNET_error, DpNET_error, S0NET_error = deep.infer_supervised_IVIM(
             IVIM_signal_noisy, 
             labels, 
             bvalues, 
-            ivimnet_path, 
+            f"{work_dir}/{ivimnet_filename}.pt",
             arg
         )
+        if super_ivim_dc_filename is None:
+            return DtNET_error, FpNET_error, DpNET_error, S0NET_error
 
-        with open(Path(ivimnet_path).parent / "IVIMNET_infer.txt", "w") as ff:
-            ff.write(
-                f"SNR: {SNR}\n" +
-                f"b-values: {bvalues}\n" +
-                f"DtNET parameters error: {DtNET_error}\n" +
-                f"FpNET parameters error: {FpNET_error}\n" +
-                f"DpNET parameters error: {DpNET_error}\n" +
-                f"S0NET parameters error: {S0NET_error}\n"
-            )
-
-    if super_ivim_dc_path is not None:
+    if super_ivim_dc_filename is not None:
         DtSUPER_error, FpSUPER_error, DpSUPER_error, S0SUPER_error = deep.infer_supervised_IVIM(
             IVIM_signal_noisy, 
             labels, 
             bvalues, 
-            super_ivim_dc_path, 
+            f"{work_dir}/{super_ivim_dc_filename}.pt", 
             arg
         )
 
-        with open(Path(super_ivim_dc_path).parent / "IVIMSUPER_infer.txt", "w") as ff:
-            ff.write(
-                f"SNR: {SNR}\n" +
-                f"b-values: {bvalues}\n" +
-                f"DtSUPER parameters error: {DtSUPER_error}\n" +
-                f"FpSUPER parameters error: {FpSUPER_error}\n" +
-                f"DpSUPER parameters error: {DpSUPER_error}\n" +
-                f"S0SUPER parameters error: {S0SUPER_error}\n"
-            )
+        if ivimnet_filename is None:
+            return DtSUPER_error, FpSUPER_error, DpSUPER_error, S0SUPER_error
 
-    if super_ivim_dc_path is not None and ivimnet_path is not None:
+    if super_ivim_dc_filename is not None and ivimnet_filename is not None:
         errors_np_array = np.stack([
             DpNET_error,  
             DpSUPER_error, 
@@ -132,26 +118,27 @@ def infer(
             FpNET_error,
             FpSUPER_error,
         ], axis=1)
-        bp_title = "IVIMNET VS IVIMSUPER parameters error SNR=10"
+        bp_title = "IVIMNET VS IVIMSUPER parameters error SNR={SNR}"
         
         deep.boxplot_ivim(errors_np_array, bp_title, save_figure_to)
+        return None
 
-
-def infer_signal(
+def infer_from_signal(
         signal,
-        labels,
         bvalues,
         model_path
 ):
-    
+    from .IVIMNET import deep
+    from .IVIMNET import inference
+    from .source.hyperparams import hyperparams as hp
+
     arg = hp()
     arg = deep.checkarg(arg)
-    DtNET_error, FpNET_error, DpNET_error, S0NET_error = deep.infer_supervised_IVIM(
+    Dp_infer, Dt_infer, Fp_infer, S0_infer = inference.supervised_IVIM(
         signal, 
-        labels, 
         bvalues, 
         model_path, 
         arg
     )
 
-    return DtNET_error, FpNET_error, DpNET_error, S0NET_error
+    return Dp_infer, Dt_infer, Fp_infer, S0_infer

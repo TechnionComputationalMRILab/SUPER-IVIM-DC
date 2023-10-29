@@ -1,7 +1,8 @@
+from pathlib import Path
 import json
 from ..IVIMNET import simulations as sim
 
-def train_model(key, arg, mode, sf, work_dir):
+def train_model(key, arg, mode, sf, filename, work_dir):
 
     SNR = arg.sim.SNR[0]
 
@@ -20,9 +21,17 @@ def train_model(key, arg, mode, sf, work_dir):
         arg.train_pars.ivim_combine = False
         
     init_settings = dict(range = arg.sim.range, cons_max = arg.net_pars.cons_max, cons_min = arg.net_pars.cons_min, bvalues = arg.sim.bvalues, loss_coef = arg.loss_coef_ivim, depth = arg.net_pars.depth, snr = SNR)
-    with open(f'{work_dir}/init/{mode}_sf_{sf}.json', 'w') as fp:
+
+    with open(f'{work_dir}/{filename}_init.json', 'w') as fp:
       json.dump(init_settings, fp, default=str, indent=4, sort_keys=True)
     
-    matNN,_  = sim.sim(SNR, arg, supervised, sf, mode, work_dir)
-
+    matNN,_  = sim.sim(
+       SNR=SNR, 
+       arg=arg, 
+       supervised=supervised, 
+       sf=sf, 
+       mode=mode, 
+       work_dir=work_dir,
+       filename=filename
+       )
     return matNN

@@ -11,7 +11,7 @@ from . import deep
 from . import fitting_algorithms as fit
 
 
-def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalues, arg, sf, snr, mode
+def sim(SNR, arg, supervised, sf, mode, work_dir, filename):#, params, case, dist): bvalues, arg, sf, snr, mode
     """ This function defines how well the different fit approaches perform on simulated data. Data is simulated by
     randomly selecting a value of D, f and D* from within the predefined range. The script calculates the random,
     systematic, root-mean-squared error (RMSE) and Spearman Rank correlation coefficient for each of the IVIM parameters.
@@ -38,10 +38,16 @@ def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalue
     """
     arg = deep.checkarg(arg)
 
-    IVIM_signal_noisy, D, f, Dp = sim_signal(SNR, arg.sim.bvalues, sims=arg.sim.sims, Dmin=arg.sim.range[0][0],
-                                         Dmax=arg.sim.range[1][0], fmin=arg.sim.range[0][1],
-                                         fmax=arg.sim.range[1][1], Dsmin=arg.sim.range[0][2],
-                                         Dsmax=arg.sim.range[1][2], rician=arg.sim.rician, key = arg.key)
+    IVIM_signal_noisy, D, f, Dp = sim_signal(
+        SNR, 
+        arg.sim.bvalues, 
+        sims=arg.sim.sims, 
+        Dmin=arg.sim.range[0][0], Dmax=arg.sim.range[1][0], 
+        fmin=arg.sim.range[0][1], fmax=arg.sim.range[1][1], 
+        Dsmin=arg.sim.range[0][2], Dsmax=arg.sim.range[1][2], 
+        rician=arg.sim.rician, 
+        key = arg.key
+        )
   
     if arg.sim.repeats > 1:
         paramsNN = np.zeros([arg.sim.repeats, 4, arg.sim.num_samples_eval])
@@ -53,17 +59,46 @@ def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalue
         for aa in range(arg.sim.repeats):
             start_time = time.time()
             # train network
-            print('\nRepeat: {repeat}\n'.format(repeat=aa))
+
+            if arg.verbose:
+                print('\nRepeat: {repeat}\n'.format(repeat=aa))
             # supervised addition
             if supervised:
                 # combine the ouput and the IVIM parameters as labels here
-                print('Supervised Training')
+                if arg.verbose:
+                    print('Supervised Training')
                 labels = np.stack((D, f, Dp), axis=1).squeeze()
-                net = deep.learn_supervised_IVIM(IVIM_signal_noisy, labels, arg.sim.bvalues, arg, sf, SNR, mode, work_dir)#, case) # add the labels to this function
+
+                # add the labels to this function
+                # net = deep.learn_supervised_IVIM(IVIM_signal_noisy, labels, arg.sim.bvalues, arg, sf, SNR, mode, work_dir, filename)#, case) 
+                net = deep.learn_supervised_IVIM(
+                    X_train=IVIM_signal_noisy, 
+                    labels=labels, 
+                    bvalues=arg.sim.bvalues, 
+                    arg=arg, 
+                    sf=sf, 
+                    snr=SNR, 
+                    mode=mode, 
+                    work_dir=work_dir, 
+                    filename=filename
+                    )
+
             else:
-                net = deep.learn_IVIM(IVIM_signal_noisy, arg.sim.bvalues, arg, sf, SNR, mode, work_dir)
+                # net = deep.learn_IVIM(IVIM_signal_noisy, arg.sim.bvalues, arg, sf, SNR, mode, work_dir)
+                net = deep.learn_IVIM(
+                    X_train=IVIM_signal_noisy, 
+                    bvalues=arg.sim.bvalues, 
+                    arg=arg, 
+                    sf=sf, 
+                    snr=SNR, 
+                    mode=mode, 
+                    work_dir=work_dir,
+                    filename=filename
+                    )
             elapsed_time = time.time() - start_time
-            print('\ntime elapsed for training: {}\n'.format(elapsed_time))
+    
+            if arg.verbose:
+                print('\ntime elapsed for training: {}\n'.format(elapsed_time))
             start_time = time.time()
             # predict parameters
             if arg.sim.repeats > 1:
@@ -71,16 +106,26 @@ def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalue
                                                  arg) # size?
             else:
                 if supervised:
-                    print('Supervised Prediction')
-                    paramsNN = deep.predict_supervised_IVIM(IVIM_signal_noisy[:arg.sim.num_samples_eval, :],labels[:arg.sim.num_samples_eval, :], arg.sim.bvalues, net, arg)
+                    if arg.verbose:
+                        print('Supervised Prediction')
+                    paramsNN = deep.predict_supervised_IVIM(
+                        IVIM_signal_noisy[:arg.sim.num_samples_eval, :],labels[:arg.sim.num_samples_eval, :], 
+                        arg.sim.bvalues, 
+                        net, 
+                        arg
+                        )
                 else:
                     paramsNN = deep.predict_IVIM(IVIM_signal_noisy[:arg.sim.num_samples_eval, :], arg.sim.bvalues, net, arg)
             elapsed_time = time.time() - start_time
-            print('\ntime elapsed for inference: {}\n'.format(elapsed_time))
+    
+            if arg.verbose:
+                print('\ntime elapsed for inference: {}\n'.format(elapsed_time))
             
             if arg.train_pars.use_cuda:
                torch.cuda.empty_cache()
-        print('results for NN')
+
+        if arg.verbose:
+            print('results for NN')
       
         X_train = IVIM_signal_noisy[:arg.sim.num_samples_eval, :]
         nan_idx = isnan(np.mean(X_train, axis=1))
@@ -120,8 +165,11 @@ def sim(SNR, arg, supervised, sf, mode, work_dir):#, params, case, dist): bvalue
         # all fitting is done in the fit.fit_dats for the other fitting algorithms (lsq, segmented and Baysesian)
         paramsf = fit.fit_dats(arg.sim.bvalues, IVIM_signal_noisy[:arg.sim.num_samples_eval, :], arg.fit)
         elapsed_time = time.time() - start_time
-        print('\ntime elapsed for fit: {}\n'.format(elapsed_time))
-        print('results for fit')
+
+        if arg.verbose:
+            print('\ntime elapsed for fit: {}\n'.format(elapsed_time))
+            print('results for fit')
+
         # determine errors and Spearman Rank
         matlsq = print_errors(np.squeeze(D_eval), np.squeeze(f_eval), np.squeeze(Dp_eval), paramsf)
         # del paramsf, IVIM_signal_noisy

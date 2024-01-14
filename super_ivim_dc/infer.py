@@ -84,10 +84,15 @@ def test_infer(
         rician=arg.sim.rician
     )
 
+    # np.save(f"{work_dir}/IVIM_signal_noisy.npy", IVIM_signal_noisy)
+    # np.save(f"{work_dir}/D.npy", D)
+    # np.save(f"{work_dir}/f.npy", f)
+    # np.save(f"{work_dir}/Dp.npy", Dp)
+
     labels = np.stack((D, f, Dp), axis=1).squeeze()  
     
     if ivimnet_filename is not None:
-        DtNET_error, FpNET_error, DpNET_error, S0NET_error = deep.infer_supervised_IVIM(
+        DpNET_error, DtNET_error, FpNET_error, S0NET_error = deep.infer_supervised_IVIM(
             IVIM_signal_noisy, 
             labels, 
             bvalues, 
@@ -95,10 +100,10 @@ def test_infer(
             arg
         )
         if super_ivim_dc_filename is None:
-            return DtNET_error, FpNET_error, DpNET_error, S0NET_error
+            return DpNET_error, DtNET_error, FpNET_error, S0NET_error
 
     if super_ivim_dc_filename is not None:
-        DtSUPER_error, FpSUPER_error, DpSUPER_error, S0SUPER_error = deep.infer_supervised_IVIM(
+        DpSUPER_error, DtSUPER_error, FpSUPER_error, S0SUPER_error = deep.infer_supervised_IVIM(
             IVIM_signal_noisy, 
             labels, 
             bvalues, 
@@ -107,7 +112,7 @@ def test_infer(
         )
 
         if ivimnet_filename is None:
-            return DtSUPER_error, FpSUPER_error, DpSUPER_error, S0SUPER_error
+            return DpSUPER_error, DtSUPER_error, FpSUPER_error, S0SUPER_error
 
     if super_ivim_dc_filename is not None and ivimnet_filename is not None:
         errors_np_array = np.stack([
@@ -118,7 +123,7 @@ def test_infer(
             FpNET_error,
             FpSUPER_error,
         ], axis=1)
-        bp_title = "IVIMNET VS IVIMSUPER parameters error SNR={SNR}"
+        bp_title = f"IVIMNET VS IVIMSUPER parameters error SNR={SNR}"
         
         deep.boxplot_ivim(errors_np_array, bp_title, save_figure_to)
         return None

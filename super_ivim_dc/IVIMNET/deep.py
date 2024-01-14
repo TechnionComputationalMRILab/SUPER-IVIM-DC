@@ -1578,7 +1578,7 @@ def boxplot_ivim(all_data, title, save_to=None):
     # adding horizontal grid lines
     ax.yaxis.grid(True)
     ax.set_xlabel('IVIM Parameters')
-    ax.set_ylabel('Observed values')
+    ax.set_ylabel('Relative MSE')
     ax.set_ylim(0, 1.5)
 
     if save_to is None:

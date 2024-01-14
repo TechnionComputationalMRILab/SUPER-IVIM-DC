@@ -12,25 +12,85 @@ SUPER-IVIM-DC has the potential to reduce the long acquisition times associated 
 
 ## Usage
 
-Clone and install the package using `pip install .`
+Clone and install the package using `pip install super-ivim-dc`
 
-### Run simulation
-Use as a python package:
+### Run training, generate `.pt` files
+
 ```
-from super_ivim_dc.simulate import simulate
-simulate()
+from super_ivim_dc.train import train
+
+import numpy as np
+working_dir: str = './working_dir'
+super_ivim_dc_filename: str = 'super_ivim_dc'  # do not include .pt
+ivimnet_filename: str = 'ivimnet'  # do not include .pt
+
+bvalues = np.array([0,15,30,45,60,75,90,105,120,135,150,175,200,400,600,800])
+snr = 10
+sample_size = 100
+
+train(
+    SNR=snr, 
+    bvalues=bvalues, 
+    super_ivim_dc=True,
+    ivimnet=True,
+    work_dir=working_dir,
+    super_ivim_dc_filename=super_ivim_dc_filename,
+    ivimnet_filename=ivimnet_filename,
+    verbose=False
+)
 ```
 
-or use as a script: `super-ivim-dc-sim`
+This will create the following files:
+- **ivimnet_init.json**, **super_ivim_dc_init.json** - contains the initial values used in the training
+- **ivimnet.pt**, **super_ivim_dc.pt** - the pytorch models
 
-This will create a directory called `output` in your current working directory, which will contain the pytorch model of the simulation.
-See super_ivim_dc/simulate.py for possible arguments
 
-### Run inference
-As a package:
+### Generate a random signal and test the generated model
+
 ```
-from super_ivim_dc.infer import infer
-infer()
+from super_ivim_dc.infer import test_infer
+
+test_infer(
+    SNR=snr,
+    bvalues=bvalues,
+    work_dir=working_dir,
+    super_ivim_dc_filename=super_ivim_dc_filename,
+    ivimnet_filename=ivimnet_filename,
+    save_figure_to=None,  # if set to None, the figure will be shown in the notebook
+    sample_size=sample_size,
+)
+```
+
+### Generate signal
+
+```
+from super_ivim_dc.IVIMNET import simulations
+
+IVIM_signal_noisy, Dt, f, Dp = simulations.sim_signal(
+    SNR=snr, 
+    bvalues=bvalues, 
+    sims=sample_size
+)
+
+Dt, f, Dp = np.squeeze(Dt), np.squeeze(f), np.squeeze(Dp)
+```
+
+### Run inference on the generated signal
+
+```
+from super_ivim_dc.infer import infer_from_signal
+
+Dp_ivimnet, Dt_ivimnet, Fp_ivimnet, S0_ivimnet = infer_from_signal(
+    signal=IVIM_signal_noisy, 
+    bvalues=bvalues,
+    model_path=f"{working_dir}/{ivimnet_filename}.pt",
+)
+
+Dp_superivimdc, Dt_superivimdc, Fp_superivimdc, S0_superivimdc = infer_from_signal(
+    signal=IVIM_signal_noisy, 
+    bvalues=bvalues,
+    model_path=f"{working_dir}/{super_ivim_dc_filename}.pt",
+)
 ```
 
 ## References

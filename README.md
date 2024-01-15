@@ -14,6 +14,8 @@ SUPER-IVIM-DC has the potential to reduce the long acquisition times associated 
 
 Clone and install the package using `pip install super-ivim-dc`
 
+We also have [a sample notebook on Google Colab](https://colab.research.google.com/drive/1aCXO0-EecTcxp9j48q54OGTOyHKKnB7r?usp=sharing). 
+
 ### Run training, generate `.pt` files
 
 ```
@@ -93,6 +95,12 @@ Dp_superivimdc, Dt_superivimdc, Fp_superivimdc, S0_superivimdc = infer_from_sign
 )
 ```
 
-## References
+## Citation
 
-* Korngut, N., Rotman, E., Afacan, O., Kurugol, S.,  Zaffrani-Reznikov, Y., Nemirovsky-Rotman, S., Warfield, S., Freiman, M.: SUPER-IVIM-DC: Intra-voxel incoherent motion based Fetal lung maturity assessment from limited DWI data using supervised learning coupled with data-consistency, https://arxiv.org/abs/2206.03820 (2022)
+If you find this code useful in your research, please consider citing:
+
+```
+@article{Korngut_Rotman_Afacan_Kurugol_Zaffrani-Reznikov_Nemirovsky-Rotman_Warfield_Freiman_2022, title={SUPER-IVIM-DC: Intra-voxel incoherent motion based fetal lung maturity assessment from limited DWI data using supervised learning coupled with data-consistency}, volume={13432}, DOI={10.1007/978-3-031-16434-7_71}, journal={Lecture Notes in Computer Science}, author={Korngut, Noam and Rotman, Elad and Afacan, Onur and Kurugol, Sila and Zaffrani-Reznikov, Yael and Nemirovsky-Rotman, Shira and Warfield, Simon and Freiman, Moti}, year={2022}, pages={743–752}}
+```
+
+[https://arxiv.org/abs/2206.03820](The paper is also available on ArXiv).

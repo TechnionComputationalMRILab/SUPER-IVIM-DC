@@ -5,14 +5,14 @@ setup(
     version="0.4.0",
     packages=find_packages(),
     install_requires=[
-        "numpy==1.25.2",
-        "scipy==1.11.1",
-        "matplotlib==3.7.2",
-        "pandas==2.0.3",
-        "SimpleITK==2.3.0",
-        "torch==2.0.1",
-        "tqdm==4.65.0",
-        "joblib==1.3.2"
+        "numpy",
+        "scipy==1.16.0",
+        "matplotlib",
+        "pandas",
+        "SimpleITK",
+        "torch==2.7.1",
+        "tqdm",
+        "joblib"
     ],
     entry_points={
         'console_scripts': [

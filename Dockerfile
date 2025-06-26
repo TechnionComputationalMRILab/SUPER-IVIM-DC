@@ -13,7 +13,7 @@ RUN rm miniconda.sh
 ENV PATH="/opt/conda/bin:${PATH}"
 
 # install the required packages
-RUN conda create --name venv python=3.10
+RUN conda create --name venv python=3.113
 RUN echo "conda activate venv" >> ~/.bashrc
 ENV PATH /opt/conda/envs/venv/bin:$PATH
 

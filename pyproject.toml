@@ -18,7 +18,8 @@ dependencies = [
     "SimpleITK",
     "torch==2.7.1",
     "tqdm",
-    "joblib"
+    "joblib",
+    "nlopt==2.9.1"
 ]
 
 [project.scripts]

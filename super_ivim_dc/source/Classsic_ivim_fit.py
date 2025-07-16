@@ -8,7 +8,7 @@ Created on Wed Jan 26 11:58:05 2022
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-#import nlopt
+import nlopt
 from warnings import warn
 
 

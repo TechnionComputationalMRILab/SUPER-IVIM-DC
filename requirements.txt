@@ -1,10 +1,9 @@
-scipy==1.16.0
-torch==2.7.1
-
+scipy
+torch
 numpy
 pandas
 joblib
 SimpleITK
 matplotlib
 tqdm
-nlopt==2.9.1
+nlopt

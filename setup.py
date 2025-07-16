@@ -2,18 +2,18 @@ from setuptools import setup, find_packages
 
 setup(
     name="super-ivim-dc",
-    version="1.1.1",
+    version="1.1.2",
     packages=find_packages(),
     install_requires=[
         "numpy",
-        "scipy==1.16.0",
+        "scipy",
         "matplotlib",
         "pandas",
         "SimpleITK",
-        "torch==2.7.1",
+        "torch",
         "tqdm",
         "joblib",
-        "nlopt==2.9.1"
+        "nlopt"
     ],
     entry_points={
         'console_scripts': [

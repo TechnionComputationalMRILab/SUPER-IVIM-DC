@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "super-ivim-dc"
-version = "1.1.1"
+version = "1.1.2"
 description = ""
 authors = []
 license = { file = "LICENSE" }
@@ -12,14 +12,14 @@ readme = "README.md"
 
 dependencies = [
     "numpy",
-    "scipy==1.16.0",
+    "scipy",
     "matplotlib",
     "pandas",
     "SimpleITK",
-    "torch==2.7.1",
+    "torch",
     "tqdm",
     "joblib",
-    "nlopt==2.9.1"
+    "nlopt"
 ]
 
 [project.scripts]

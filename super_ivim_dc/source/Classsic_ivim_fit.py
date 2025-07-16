@@ -144,6 +144,9 @@ def fit_least_squers_BOBYQA(N, b_vector, si, bounds, p0):
 
 
 def IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high=200):
+    # N - iteration of the number of signals for nonlinear optimizations (because it's not vectorized)
+    # Bounds are applied only for nonlinear optimizers
+
     # for one smaple
     # first estimate D,S0 for mono-exp:
     p0[0] *= D_factor
@@ -165,7 +168,7 @@ def IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high=200):
     del_index = []
     # params, _ = curve_fit(lambda b, Dp: Fp * np.exp(-b * Dp), b_vector, si_remaining, p0=p0_Ds, bounds=bounds_Ds)
     DStar = np.array([])
-    for i in range(N):
+    for i in range(N):  
         s = np.squeeze(si[:, i])
         try:
             params, _ = curve_fit(lambda b, DStar: s0[i] * (

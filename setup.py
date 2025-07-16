@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="super-ivim-dc",
-    version="1.1.0",
+    version="1.1.1",
     packages=find_packages(),
     install_requires=[
         "numpy",
@@ -12,7 +12,8 @@ setup(
         "SimpleITK",
         "torch==2.7.1",
         "tqdm",
-        "joblib"
+        "joblib",
+        "nlopt==2.9.1"
     ],
     entry_points={
         'console_scripts': [

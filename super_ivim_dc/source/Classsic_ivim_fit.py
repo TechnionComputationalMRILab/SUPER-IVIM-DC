@@ -8,7 +8,7 @@ Created on Wed Jan 26 11:58:05 2022
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-import nlopt
+
 from warnings import warn
 
 
@@ -55,7 +55,8 @@ def ivim_fit_nlls_error(xData, gradData, b_vector, si):
     return np.mean((si - si_fit) ** 2)
 
 
-def fit_least_squares_lm(N, b_vector, si, p0):
+# def fit_least_squares_lm(N, b_vector, si, p0):
+def fit_least_squares_lm(b_vector, si, p0):
     # the algorithm uses the Levenberg-Marquardt algorithm
     p0[0] *= D_factor
     p0[3] *=s0_factor
@@ -65,7 +66,8 @@ def fit_least_squares_lm(N, b_vector, si, p0):
     f = np.array([])
     s0 = np.array([])
 
-    for i in range(N):
+    # for i in range(N):
+    for i in range(si.shape[0]):
         s = np.squeeze(si[:, i])
         try:
             params = curve_fit(ivimN, b_vector, s, p0, maxfev=2000)
@@ -80,7 +82,8 @@ def fit_least_squares_lm(N, b_vector, si, p0):
     return D, DStar, f, s0, del_index
 
 
-def fit_least_squares_trf(N, b_vector, si, bounds, p0):
+# def fit_least_squares_trf(N, b_vector, si, bounds, p0):
+def fit_least_squares_trf(b_vector, si, bounds, p0):
     # the algorithm uses the Trust Region Reflective algorithm
     p0[0] *= D_factor
     p0[3] *= s0_factor
@@ -92,7 +95,8 @@ def fit_least_squares_trf(N, b_vector, si, bounds, p0):
     f = np.array([])
     s0 = np.array([])
 
-    for i in range(N):
+    # for i in range(N):
+    for i in range(si.shape[0]):
         s = np.squeeze(si[:, i])
         try:
             params = curve_fit(ivimN, b_vector, s, p0, bounds=bounds_factor, maxfev=30000)
@@ -106,7 +110,10 @@ def fit_least_squares_trf(N, b_vector, si, bounds, p0):
     return D, DStar, f, s0, del_index
 
 
-def fit_least_squers_BOBYQA(N, b_vector, si, bounds, p0):
+# def fit_least_squers_BOBYQA(N, b_vector, si, bounds, p0):
+def fit_least_squares_BOBYQA(b_vector, si, bounds, p0):
+    import nlopt
+
     p0[0] *= D_factor
     p0[3] *= s0_factor
     D, DStar, f, s0 = p0
@@ -127,7 +134,8 @@ def fit_least_squers_BOBYQA(N, b_vector, si, bounds, p0):
         DStar = np.array([])
         f = np.array([])
         s0 = np.array([])
-        for i in range(N):
+        # for i in range(N):
+        for i in range(si.shape[0]):
             s = np.squeeze(si[:, i])
             try:
                 opt.set_min_objective(
@@ -143,7 +151,8 @@ def fit_least_squers_BOBYQA(N, b_vector, si, bounds, p0):
     return D, DStar, f, s0, del_index
 
 
-def IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high=200):
+# def IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high=200):
+def IVIM_fit_sls(si, b_vector, bounds, p0, min_bval_high=200):
     # N - iteration of the number of signals for nonlinear optimizations (because it's not vectorized)
     # Bounds are applied only for nonlinear optimizers
 
@@ -168,7 +177,8 @@ def IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high=200):
     del_index = []
     # params, _ = curve_fit(lambda b, Dp: Fp * np.exp(-b * Dp), b_vector, si_remaining, p0=p0_Ds, bounds=bounds_Ds)
     DStar = np.array([])
-    for i in range(N):  
+    # for i in range(N):
+    for i in range(si.shape[0]):
         s = np.squeeze(si[:, i])
         try:
             params, _ = curve_fit(lambda b, DStar: s0[i] * (
@@ -194,7 +204,8 @@ def fitMonoExpModel(s, b_vector):
     return s0, ADC
 
 
-def IVIM_fit_sls_lm(N, si, b_vector, bounds, p0, min_bval_high=200):
+# def IVIM_fit_sls_lm(N, si, b_vector, bounds, p0, min_bval_high=200):
+def IVIM_fit_sls_lm(si, b_vector, bounds, p0, min_bval_high=200):    
     D_sls, DStar_sls, f_sls, s0_sls, s0_d, del_index = IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high)
     si = np.delete(si, del_index, 1)
     D = np.array([])
@@ -202,7 +213,8 @@ def IVIM_fit_sls_lm(N, si, b_vector, bounds, p0, min_bval_high=200):
     f = np.array([])
     s0 = np.array([])
     del_index = []
-    for i in range(N):
+    # for i in range(N):
+    for i in range(si.shape[0]):
         p0 = [D_sls[i] , DStar_sls[i], f_sls[i], s0_sls[i] ]
         try:
             D_fit, DStar_fit, f_fit, s0_fit, fit_del_index = fit_least_squares_lm(1, b_vector, si[:, i, None], p0)
@@ -217,7 +229,8 @@ def IVIM_fit_sls_lm(N, si, b_vector, bounds, p0, min_bval_high=200):
             del_index.append(i)
     return D, DStar, f, s0, s0_d, del_index
 
-def IVIM_fit_sls_trf(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
+# def IVIM_fit_sls_trf(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
+def IVIM_fit_sls_trf(si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
     D_sls, DStar_sls, f_sls, s0_sls, s0_d, del_index = IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high)
     print(DStar_sls)
     si = np.delete(si, del_index, 1)
@@ -226,7 +239,8 @@ def IVIM_fit_sls_trf(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200
     f = np.array([])
     s0 = np.array([])
     del_index = []
-    for i in range(N):
+    # for i in range(N):
+    for i in range(si.shape[0]):
         p0 = [D_sls[i] , DStar_sls[i], f_sls[i], s0_sls[i] ]
         # if p0 out of bound, take extrime bound as p0:
         sls_bounds = np.array(bounds)  # d,d*,f,so
@@ -250,7 +264,8 @@ def IVIM_fit_sls_trf(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200
     return D, DStar, f, s0, s0_d, del_index
 
 
-def IVIM_fit_sls_BOBYQA(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
+# def IVIM_fit_sls_BOBYQA(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):
+def IVIM_fit_sls_BOBYQA(si, b_vector, bounds, p0, eps=0.00001, min_bval_high=200):    
     D_sls, DStar_sls, f_sls, s0_sls, s0_d, del_index = IVIM_fit_sls(N, si, b_vector, bounds, p0, min_bval_high)
     si = np.delete(si, del_index, 1)
     D = np.array([])
@@ -258,7 +273,8 @@ def IVIM_fit_sls_BOBYQA(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=
     f = np.array([])
     s0 = np.array([])
     del_index = []
-    for i in range(N):
+    # for i in range(N):
+    for i in range(si.shape[0]):
         p0 = [D_sls[i] , DStar_sls[i], f_sls[i], s0_sls[i] ]
         # if p0 out of bound, take extrime bound as p0:
         sls_bounds = np.array(bounds)  # d,d*,f,so
@@ -268,7 +284,7 @@ def IVIM_fit_sls_BOBYQA(N, si, b_vector, bounds, p0, eps=0.00001, min_bval_high=
             elif p0[j] > sls_bounds[1, j]:
                 p0[j] = sls_bounds[1, j] - sls_bounds[0, j] * eps
         try:
-            D_fit, DStar_fit, f_fit, s0_fit, fit_del_index = fit_least_squers_BOBYQA(1, b_vector, si[:, i, None], bounds,
+            D_fit, DStar_fit, f_fit, s0_fit, fit_del_index = fit_least_squares_BOBYQA(1, b_vector, si[:, i, None], bounds,
                                                                                    p0)
             if len(fit_del_index) != 0:
                 del_index.append(i)

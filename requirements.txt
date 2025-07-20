@@ -6,4 +6,3 @@ joblib
 SimpleITK
 matplotlib
 tqdm
-nlopt

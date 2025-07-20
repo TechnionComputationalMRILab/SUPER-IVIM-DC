@@ -12,7 +12,13 @@ SUPER-IVIM-DC has the potential to reduce the long acquisition times associated 
 
 ## Usage
 
-Clone and install the package using `pip install super-ivim-dc`
+Install the package using `pip install super-ivim-dc`
+
+In order to use the function `fit_least_squares_BOBYQA`, the package [`nlopt`](https://github.com/stevengj/nlopt) is required, which requires `libnlopt-dev`.
+```
+sudo apt install libnlopt-dev
+pip install "super-ivim-dc[BOBYQA]"
+```
 
 We also have [a sample notebook on Google Colab](https://colab.research.google.com/drive/1aCXO0-EecTcxp9j48q54OGTOyHKKnB7r?usp=sharing). 
 
